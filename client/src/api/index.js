@@ -1,11 +1,7 @@
 import axios from 'axios'
 
-const BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:4000/api'
-
-console.log('API URL:', BASE_URL) // temporary debug log
-
 const api = axios.create({
-  baseURL: BASE_URL,
+  baseURL: 'https://injera-house-server.onrender.com/api',
 })
 
 api.interceptors.request.use((config) => {
