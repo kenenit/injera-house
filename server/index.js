@@ -17,7 +17,14 @@ const port = process.env.PORT || 4000
 
 // ── Middleware ────────────────────────────────────────────────────────────
 app.use(helmet())
-app.use(cors({ origin: process.env.CLIENT_ORIGIN || 'http://localhost:5173', credentials: true }))
+app.use(cors({ 
+  origin: [
+    'http://localhost:5173',
+    'https://injera-house.vercel.app',
+    'https://injera-house-n8oaypqdu-keneniteha08-6393s-projects.vercel.app',
+  ], 
+  credentials: true 
+}))
 app.use(morgan('dev'))
 app.use(express.json())
 
