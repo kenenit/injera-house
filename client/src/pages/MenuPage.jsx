@@ -1,6 +1,8 @@
 import { useEffect, useState, useMemo } from 'react'
-import { Plus, Minus, Flame, Leaf, Loader2, Search, X } from 'lucide-react'
+import { Plus, Minus, Flame, Leaf, Search, X, UtensilsCrossed } from 'lucide-react'
 import { useCart } from '../context/CartContext'
+import { MenuCardSkeleton } from '../components/Skeleton'
+import EmptyState from '../components/EmptyState'
 import api from '../api/index.js'
 
 export default function MenuPage() {
@@ -89,7 +91,7 @@ export default function MenuPage() {
 
       {/* Category chips — hidden when searching */}
       {!searchQuery && (
-        <div style={{ padding: '12px 48px', borderBottom: '1px solid var(--border)', background: 'var(--cream)', display: 'flex', flexWrap: 'wrap', gap: 8 }}>
+        <div style={{ padding: '12px var(--section-padding-x)', borderBottom: '1px solid var(--border)', background: 'var(--cream)', display: 'flex', flexWrap: 'wrap', gap: 8 }}>
           {allCategories.map((cat) => (
             <button
               key={cat}
@@ -104,18 +106,18 @@ export default function MenuPage() {
 
       {/* Search result header */}
       {searchQuery && (
-        <div style={{ padding: '12px 48px', background: 'var(--cream-2)', borderBottom: '1px solid var(--border)', fontSize: 14, color: 'var(--muted)' }}>
+        <div style={{ padding: '12px var(--section-padding-x)', background: 'var(--cream-2)', borderBottom: '1px solid var(--border)', fontSize: 14, color: 'var(--muted)' }}>
           {filteredItems.length === 0
             ? `No dishes found for "${searchQuery}"`
             : `${filteredItems.length} dish${filteredItems.length > 1 ? 'es' : ''} found for "${searchQuery}"`}
         </div>
       )}
 
-      {/* Loading */}
+      {/* Loading skeletons */}
       {loading && (
-        <div style={{ display: 'flex', justifyContent: 'center', padding: '3rem', color: 'var(--muted)' }}>
-          <Loader2 size={28} style={{ animation: 'spin 1s linear infinite' }} />
-        </div>
+        <section className="menu-grid" aria-busy="true" aria-label="Loading menu items">
+          {Array.from({ length: 6 }).map((_, i) => <MenuCardSkeleton key={i} />)}
+        </section>
       )}
 
       {/* Error */}
@@ -129,9 +131,9 @@ export default function MenuPage() {
           {filteredItems.map((item) => {
             const qty = cartQty(item.id)
             return (
-              <article key={item.id} className="menu-card">
-                <div style={{ position: 'relative' }}>
-                  <img src={item.image} alt={item.name} />
+              <article key={item.id} className="menu-card img-zoom hover-lift">
+                <div style={{ position: 'relative', overflow: 'hidden' }}>
+                  <img src={item.image} alt={item.name} loading="lazy" />
                   <div style={{ position: 'absolute', top: 10, left: 10, display: 'flex', gap: 6 }}>
                     {item.is_spicy && (
                       <span style={{ background: '#DC2626', color: '#fff', fontSize: 11, padding: '2px 8px', borderRadius: 20, display: 'flex', alignItems: 'center', gap: 3 }}>
@@ -154,16 +156,16 @@ export default function MenuPage() {
                     <span className="price">ETB {Number(item.price).toLocaleString()}</span>
                   </div>
                   {qty === 0 ? (
-                    <button className="primary-btn" onClick={() => addToCart(item)}>
+                    <button className="primary-btn btn-block" onClick={() => addToCart(item)} aria-label={`Add ${item.name} to cart`}>
                       <Plus size={16} /> Add to cart
                     </button>
                   ) : (
                     <div className="quantity-controls" style={{ justifyContent: 'space-between', width: '100%' }}>
-                      <button onClick={() => updateQuantity(item.id, qty - 1)}>
+                      <button onClick={() => updateQuantity(item.id, qty - 1)} aria-label={`Remove one ${item.name}`}>
                         <Minus size={14} />
                       </button>
                       <span style={{ fontWeight: 600 }}>{qty} in cart</span>
-                      <button onClick={() => addToCart(item)}>
+                      <button onClick={() => addToCart(item)} aria-label={`Add one more ${item.name}`}>
                         <Plus size={14} />
                       </button>
                     </div>
@@ -174,21 +176,19 @@ export default function MenuPage() {
           })}
 
           {filteredItems.length === 0 && !loading && (
-            <div style={{ gridColumn: '1/-1', textAlign: 'center', padding: '3rem' }}>
-              <p style={{ color: 'var(--muted)', marginBottom: 12 }}>No dishes found.</p>
-              {searchQuery && (
-                <button className="primary-btn" onClick={() => setSearchQuery('')}>
-                  Clear search
-                </button>
-              )}
+            <div style={{ gridColumn: '1/-1' }}>
+              <EmptyState
+                icon={UtensilsCrossed}
+                title="No dishes found"
+                message={searchQuery ? `We couldn't find anything matching "${searchQuery}".` : 'No dishes available in this category right now.'}
+                action={searchQuery && (
+                  <button className="primary-btn" onClick={() => setSearchQuery('')}>Clear search</button>
+                )}
+              />
             </div>
           )}
         </section>
       )}
-
-      <style>{`
-        @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
-      `}</style>
     </div>
   )
 }

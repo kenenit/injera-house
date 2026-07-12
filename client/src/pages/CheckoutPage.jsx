@@ -1,10 +1,13 @@
 import { useMemo, useState } from 'react'
 import { Minus, Plus, CheckCircle2 } from 'lucide-react'
 import { useCart } from '../context/CartContext'
+import { useToast } from '../context/ToastContext'
+import Reveal from '../components/Reveal'
 import api from '../api/index.js'
 
 export default function CheckoutPage() {
   const { items, updateQuantity, clearCart } = useCart()
+  const { showToast } = useToast()
   const [trackingCode, setTrackingCode]      = useState(null)
   const [loading, setLoading]                = useState(false)
   const [error, setError]                    = useState('')
@@ -37,8 +40,11 @@ export default function CheckoutPage() {
 
       clearCart()
       setTrackingCode(res.data.tracking_code)
+      showToast('Order placed! Save your tracking code.', 'success')
     } catch (err) {
-      setError(err.response?.data?.error || 'Something went wrong. Please try again.')
+      const message = err.response?.data?.error || 'Something went wrong. Please try again.'
+      setError(message)
+      showToast(message, 'error')
     } finally {
       setLoading(false)
     }
@@ -46,7 +52,7 @@ export default function CheckoutPage() {
 
   if (trackingCode) {
     return (
-      <div className="confirmation-card">
+      <Reveal type="scale" as="div" className="confirmation-card" role="status">
         <CheckCircle2 size={44} />
         <h2>Order placed successfully!</h2>
         <p>Your meal is being prepared. Use the code below to track your order anytime.</p>
@@ -65,7 +71,7 @@ export default function CheckoutPage() {
         <p style={{ fontSize: 13, color: 'var(--muted)' }}>
           Save this code — go to the <strong>Track</strong> page and enter it to see your order status.
         </p>
-      </div>
+      </Reveal>
     )
   }
 
@@ -83,11 +89,11 @@ export default function CheckoutPage() {
                 <p>ETB {Number(item.price).toLocaleString()} each</p>
               </div>
               <div className="quantity-controls">
-                <button onClick={() => updateQuantity(item.id, item.quantity - 1)}>
+                <button onClick={() => updateQuantity(item.id, item.quantity - 1)} aria-label={`Remove one ${item.name}`}>
                   <Minus size={14} />
                 </button>
-                <span>{item.quantity}</span>
-                <button onClick={() => updateQuantity(item.id, item.quantity + 1)}>
+                <span aria-live="polite">{item.quantity}</span>
+                <button onClick={() => updateQuantity(item.id, item.quantity + 1)} aria-label={`Add one more ${item.name}`}>
                   <Plus size={14} />
                 </button>
               </div>

@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { Search, Package, ChefHat, CheckCircle2, Clock, XCircle, Bike } from 'lucide-react'
+import Reveal from '../components/Reveal'
 import api from '../api/index.js'
 
 const STATUS_CONFIG = {
@@ -41,7 +42,7 @@ export default function TrackPage() {
 
   return (
     <div className="track-page">
-      <section className="track-card">
+      <Reveal type="fade-up" as="section" className="track-card">
         <p className="eyebrow">Track your meal</p>
         <h2>Enter your tracking code</h2>
         <p style={{ color: 'var(--muted)', marginBottom: '1.5rem', fontSize: 14 }}>
@@ -54,6 +55,7 @@ export default function TrackPage() {
             onChange={(e) => setCode(e.target.value)}
             placeholder="e.g. IH-20260001"
             required
+            aria-label="Order tracking code"
             style={{ textTransform: 'uppercase', letterSpacing: '0.05em' }}
           />
           <button className="primary-btn" type="submit" disabled={loading}>
@@ -68,7 +70,7 @@ export default function TrackPage() {
 
         {/* Order result */}
         {order && config && (
-          <div className="status-box" style={{ marginTop: '2rem' }}>
+          <div className="status-box" style={{ marginTop: '2rem' }} role="status" aria-live="polite">
 
             {/* Status badge */}
             <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: '1.5rem' }}>
@@ -156,7 +158,7 @@ export default function TrackPage() {
             )}
           </div>
         )}
-      </section>
+      </Reveal>
     </div>
   )
 }

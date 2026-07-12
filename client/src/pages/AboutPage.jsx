@@ -1,5 +1,6 @@
 import { Link } from 'react-router-dom'
 import { UtensilsCrossed, Heart, Leaf, Award } from 'lucide-react'
+import Reveal from '../components/Reveal'
 
 const TEAM = [
   { name: 'Almaz Tadesse',  role: 'Head Chef & Founder',     bio: 'With over 20 years in the kitchen, Almaz learned to cook from her grandmother in Gondar. Every recipe carries that heritage.' },
@@ -29,7 +30,7 @@ export default function AboutPage() {
           backgroundImage: "url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='60' height='60'%3E%3Cpath d='M30 0 L60 30 L30 60 L0 30 Z' fill='none' stroke='%23C8922A' stroke-width='0.6' opacity='0.15'/%3E%3C/svg%3E\")",
           backgroundSize: '60px 60px', pointerEvents: 'none',
         }} />
-        <div style={{ padding: '64px 48px', display: 'flex', flexDirection: 'column', justifyContent: 'center', position: 'relative', zIndex: 1 }}>
+        <div style={{ padding: 'var(--section-padding-y) var(--section-padding-x)', display: 'flex', flexDirection: 'column', justifyContent: 'center', position: 'relative', zIndex: 1 }}>
           <p className="eyebrow">Our story</p>
           <h1 style={{ color: 'var(--cream)', marginBottom: 16 }}>More than a restaurant</h1>
           <p style={{ color: 'var(--parchment)', lineHeight: 1.9, fontSize: '1.05rem', marginBottom: 24 }}>
@@ -39,12 +40,18 @@ export default function AboutPage() {
             Today we serve hundreds of guests daily — but the spirit is the same. Pull up a mesob, tear the injera, and share.
           </p>
         </div>
-        <div style={{ position: 'relative', overflow: 'hidden', minHeight: 300 }}>
+        <div style={{ position: 'relative', overflow: 'hidden', minHeight: 340 }}>
           <img
             src="/images/family-meat-combo.jpg"
             alt="Injera House food"
-            style={{ width: '100%', height: '100%', objectFit: 'cover', opacity: 0.85 }}
+            style={{ width: '100%', height: '100%', objectFit: 'cover', objectPosition: 'center 35%' }}
           />
+          {/* Soft fade into the dark panel instead of a flat opacity wash */}
+          <div style={{
+            position: 'absolute', inset: 0,
+            background: 'linear-gradient(90deg, var(--clay-dark) 0%, rgba(74,34,0,0) 18%, rgba(74,34,0,0) 82%, var(--clay-dark) 100%)',
+            pointerEvents: 'none',
+          }} />
         </div>
       </section>
 
@@ -52,18 +59,18 @@ export default function AboutPage() {
       <div className="pattern-strip" />
 
       {/* Values */}
-      <section style={{ padding: '64px 48px', background: 'var(--cream)' }}>
+      <section style={{ padding: 'var(--section-padding-y) var(--section-padding-x)', background: 'var(--cream)' }}>
         <div style={{ textAlign: 'center', marginBottom: 40 }}>
           <p className="eyebrow">What we stand for</p>
           <h2>Our values</h2>
         </div>
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 24 }}>
+        <div className="reveal-stagger" style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 24 }}>
           {VALUES.map(({ icon: Icon, title, desc }) => (
-            <div key={title} style={{ background: '#fff', border: '1px solid var(--border)', borderRadius: 'var(--radius-md)', padding: '28px 24px', borderTop: '3px solid var(--gold)' }}>
+            <Reveal type="fade-up" as="div" key={title} className="ui-card hover-lift" style={{ borderTop: '3px solid var(--gold)' }}>
               <Icon size={28} color="var(--gold)" style={{ marginBottom: 14 }} />
               <h3 style={{ marginBottom: 10 }}>{title}</h3>
               <p style={{ color: 'var(--muted)', fontSize: '0.88rem', lineHeight: 1.7 }}>{desc}</p>
-            </div>
+            </Reveal>
           ))}
         </div>
       </section>
@@ -77,7 +84,7 @@ export default function AboutPage() {
 
       {/* Coffee ceremony image section */}
       <section style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', minHeight: 360 }}>
-        <div style={{ background: 'var(--cream-2)', padding: '56px 48px', display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
+        <div style={{ background: 'var(--cream-2)', padding: 'var(--space-9) var(--section-padding-x)', display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
           <p className="eyebrow">The experience</p>
           <h2 style={{ marginBottom: 16 }}>Come as a guest, leave as family</h2>
           <p style={{ color: 'var(--muted)', lineHeight: 1.9, marginBottom: 16 }}>
@@ -88,7 +95,7 @@ export default function AboutPage() {
           </p>
           <div style={{ display: 'flex', gap: 12 }}>
             <Link to="/menu" className="primary-btn">View our menu</Link>
-            <Link to="/reserve" className="secondary-btn">Book a table</Link>
+            <Link to="/contact" className="secondary-btn">Get in touch</Link>
           </div>
         </div>
         <div style={{ position: 'relative', overflow: 'hidden' }}>
@@ -101,14 +108,14 @@ export default function AboutPage() {
       </section>
 
       {/* Team */}
-      <section style={{ padding: '64px 48px', background: 'var(--cream)' }}>
+      <section style={{ padding: 'var(--section-padding-y) var(--section-padding-x)', background: 'var(--cream)' }}>
         <div style={{ textAlign: 'center', marginBottom: 40 }}>
           <p className="eyebrow">The people behind the food</p>
           <h2>Meet our team</h2>
         </div>
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 24, maxWidth: 900, margin: '0 auto' }}>
+        <div className="reveal-stagger" style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 24, maxWidth: 900, margin: '0 auto' }}>
           {TEAM.map(({ name, role, bio }) => (
-            <div key={name} style={{ background: '#fff', border: '1px solid var(--border)', borderRadius: 'var(--radius-md)', padding: '32px 24px', textAlign: 'center' }}>
+            <Reveal type="fade-up" as="div" key={name} className="ui-card hover-lift" style={{ textAlign: 'center' }}>
               {/* Avatar placeholder */}
               <div style={{
                 width: 72, height: 72, borderRadius: '50%',
@@ -121,19 +128,19 @@ export default function AboutPage() {
               <h3 style={{ marginBottom: 4 }}>{name}</h3>
               <p style={{ fontSize: 12, color: 'var(--gold)', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 12 }}>{role}</p>
               <p style={{ color: 'var(--muted)', fontSize: '0.875rem', lineHeight: 1.7 }}>{bio}</p>
-            </div>
+            </Reveal>
           ))}
         </div>
       </section>
 
       {/* CTA banner */}
-      <div className="mini-banner" style={{ justifyContent: 'center', gap: 24, padding: '28px 48px' }}>
+      <div className="mini-banner" style={{ justifyContent: 'center', gap: 24, padding: 'var(--space-6) var(--section-padding-x)' }}>
         <span style={{ fontSize: '1rem' }}>Ready to experience Injera House?</span>
         <Link to="/menu" className="primary-btn" style={{ background: 'var(--gold)', color: 'var(--clay-dark)' }}>
           Order now
         </Link>
-        <Link to="/reserve" className="primary-btn" style={{ background: 'transparent', border: '1px solid var(--gold)', color: 'var(--gold)' }}>
-          Reserve a table
+        <Link to="/contact" className="primary-btn" style={{ background: 'transparent', border: '1px solid var(--gold)', color: 'var(--gold)' }}>
+          Contact us
         </Link>
       </div>
 

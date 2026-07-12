@@ -1,74 +1,69 @@
-import { BrowserRouter, Routes, Route, NavLink } from 'react-router-dom'
-import { ShoppingBag, Clock3, Sparkles, UtensilsCrossed } from 'lucide-react'
-import { CartProvider, useCart } from './context/CartContext'
+import { Suspense, lazy } from 'react'
+import { BrowserRouter, Routes, Route } from 'react-router-dom'
+import { Loader2 } from 'lucide-react'
+import { CartProvider } from './context/CartContext'
 import { AuthProvider } from './context/AuthContext'
-import HomePage from './pages/HomePage'
-import MenuPage from './pages/MenuPage'
-import CheckoutPage from './pages/CheckoutPage'
-import TrackPage from './pages/TrackPage'
-import AdminPage from './pages/AdminPage'
-import ReservationPage from './pages/ReservationPage'
-import AboutPage from './pages/AboutPage'
+import { ToastProvider } from './context/ToastContext'
+import Navbar from './components/Navbar'
+import Footer from './components/Footer'
 import './App.css'
+import './theme.css'
 
-function CartButton() {
-  const { items } = useCart()
-  const count = items.reduce((sum, item) => sum + item.quantity, 0)
+// Route-level code splitting — each page loads on demand
+const HomePage     = lazy(() => import('./pages/HomePage'))
+const MenuPage     = lazy(() => import('./pages/MenuPage'))
+const CheckoutPage = lazy(() => import('./pages/CheckoutPage'))
+const TrackPage    = lazy(() => import('./pages/TrackPage'))
+const AboutPage    = lazy(() => import('./pages/AboutPage'))
+const ContactPage  = lazy(() => import('./pages/ContactPage'))
+const AdminPage    = lazy(() => import('./pages/AdminPage'))
+
+function RouteFallback() {
   return (
-    <NavLink to="/checkout" className="nav-pill">
-      <ShoppingBag size={16} />
-      <span>Cart ({count})</span>
-    </NavLink>
+    <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '50vh', color: 'var(--muted)' }}>
+      <Loader2 size={28} className="spin-icon" aria-hidden="true" />
+      <span className="sr-only" style={{ position: 'absolute', width: 1, height: 1, overflow: 'hidden' }}>Loading page…</span>
+    </div>
   )
 }
 
 function AppShell() {
   return (
     <div className="app-shell">
-      <header className="topbar">
-        <NavLink to="/" className="brand">
-          <UtensilsCrossed size={20} />
-           Injera House
-        </NavLink>
-        <nav className="main-nav">
-          <NavLink to="/"         end className={({ isActive }) => 'nav-pill' + (isActive ? ' active' : '')}>Home</NavLink>
-          <NavLink to="/menu"     className={({ isActive }) => 'nav-pill' + (isActive ? ' active' : '')}>Menu</NavLink>
-          <NavLink to="/track"    className={({ isActive }) => 'nav-pill' + (isActive ? ' active' : '')}>Track</NavLink>
-          <NavLink to="/admin"    className={({ isActive }) => 'nav-pill' + (isActive ? ' active' : '')}>Admin</NavLink>
-          <NavLink to="/reserve" className={({ isActive }) => 'nav-pill' + (isActive ? ' active' : '')}>Reserve</NavLink>
-          <NavLink to="/about" className={({ isActive }) => 'nav-pill' + (isActive ? ' active' : '')}>About</NavLink>
-          <CartButton />
-        </nav>
-      </header>
+      <a href="#main-content" className="skip-link">Skip to content</a>
+      <Navbar />
 
-      <main className="page">
-        <Routes>
-          <Route path="/"         element={<HomePage />} />
-          <Route path="/menu"     element={<MenuPage />} />
-          <Route path="/checkout" element={<CheckoutPage />} />
-          <Route path="/track"    element={<TrackPage />} />
-          <Route path="/admin"    element={<AdminPage />} />
-          <Route path="/reserve" element={<ReservationPage />} />
-          <Route path="/about" element={<AboutPage />} />
-        </Routes>
+      <main className="page" id="main-content">
+        <Suspense fallback={<RouteFallback />}>
+          <Routes>
+            <Route path="/"         element={<HomePage />} />
+            <Route path="/menu"     element={<MenuPage />} />
+            <Route path="/checkout" element={<CheckoutPage />} />
+            <Route path="/track"    element={<TrackPage />} />
+            <Route path="/about"    element={<AboutPage />} />
+            <Route path="/contact"  element={<ContactPage />} />
+            {/* Admin is intentionally not linked from public navigation —
+                only reachable by typing the URL directly, gated by login */}
+            <Route path="/admin"    element={<AdminPage />} />
+          </Routes>
+        </Suspense>
       </main>
 
-      <footer className="footer">
-        <div><Sparkles size={16} /><span>Fresh injera, slow-cooked stews, and warm hospitality.</span></div>
-        <div><Clock3 size={16} /><span>Open daily · 11:00 AM – 10:00 PM</span></div>
-      </footer>
+      <Footer />
     </div>
   )
 }
 
 export default function App() {
   return (
-    <AuthProvider>
-      <CartProvider>
-        <BrowserRouter>
-          <AppShell />
-        </BrowserRouter>
-      </CartProvider>
-    </AuthProvider>
+    <ToastProvider>
+      <AuthProvider>
+        <CartProvider>
+          <BrowserRouter>
+            <AppShell />
+          </BrowserRouter>
+        </CartProvider>
+      </AuthProvider>
+    </ToastProvider>
   )
 }

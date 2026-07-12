@@ -8,7 +8,11 @@ import menuRoutes  from './routes/menu.js'
 import orderRoutes from './routes/orders.js'
 import authRoutes  from './routes/auth.js'
 import adminRoutes from './routes/admin.js'
-import reservationRoutes from './routes/reservations.js'
+// NOTE: table reservations are not part of this restaurant's business model
+// (target audience is Ethiopian restaurants, where reservations are not
+// normal practice). routes/reservations.js is kept in the repo for
+// reference but intentionally not mounted below.
+// import reservationRoutes from './routes/reservations.js'
 
 dotenv.config()
 
@@ -34,7 +38,6 @@ app.use('/api/menu',   menuRoutes)
 app.use('/api/orders', orderRoutes)
 app.use('/api/auth',   authRoutes)
 app.use('/api/admin',  adminRoutes)
-app.use('/api/reservations', reservationRoutes)
 
 // ── Global error handler ──────────────────────────────────────────────────
 app.use((err, _req, res, _next) => {
